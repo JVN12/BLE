@@ -180,8 +180,8 @@
             const decoder = new TextDecoder();
             const suhu = decoder.decode(value);
         
-            console.log("Received:", suhu);
             document.getElementById("suhu").value = suhu;
+            console.log("Latest temp:", suhu);
         
         };
         
