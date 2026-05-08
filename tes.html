@@ -168,15 +168,25 @@
                 alert('Gagal mengirim perintah: ' + error.message);
             }
         }
-        
+
         btn1.onclick = () => sendCommand('1');
         btn2.onclick = () => sendCommand('2');
         btn3.onclick = () => sendCommand('3');
         btn4.onclick = () => sendCommand('4');
         btn5.onclick = () => sendCommand('5');
         btn6.onclick = () => sendCommand('6');
-        btnsuhu.onclick = () => document.getElementById('val_celcius2');
+        btnsuhu.onclick = async () => {
+            const value = event.target.value;
         
+            // Convert bytes to text
+            const decoder = new TextDecoder();
+        
+            const suhu = decoder.decode(value);
+        
+            // Show temperature
+            document.getElementById("suhu").innerText =
+                suhu + " °C";
+        }
         btnConnect.onclick = async () => {
             if (connected && device) {
                 // Putuskan koneksi
