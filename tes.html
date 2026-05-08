@@ -174,7 +174,19 @@
         btn5.onclick = () => sendCommand('5');
         btn6.onclick = () => sendCommand('6');
         
+        await characteristic.startNotifications();
 
+        characteristic.addEventListener(
+        "characteristicvaluechanged",
+        (event) => {
+
+        const value = event.target.value;
+        const decoder = new TextDecoder();
+        const suhu = decoder.decode(value);
+
+        document.getElementById("suhu").value = suhu;
+            }
+        );
         
         btnsuhu.onclick = async () => {
             const value = await characteristic.readValue();
@@ -184,7 +196,6 @@
         
             console.log("Received:", suhu);
         
-            document.getElementById("suhu").value = suhu;
         }
         
         btnConnect.onclick = async () => {
