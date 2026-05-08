@@ -90,9 +90,7 @@
 <body>
     <div class="container">
         <h1>🎛️ ESP32 LED Controller</h1>
-        <div id="suhu">
-            suhu
-        </div>
+        <input type="text" id="suhuBox" readonly>
         <div id="status" class="disconnected">
             Status: Belum terhubung
         </div>
@@ -175,6 +173,7 @@
         btn4.onclick = () => sendCommand('4');
         btn5.onclick = () => sendCommand('5');
         btn6.onclick = () => sendCommand('6');
+        
         btnsuhu.onclick = async () => {
             // Read value from BLE characteristic
             const value = await characteristic.readValue();
@@ -185,9 +184,10 @@
             const suhu = decoder.decode(value);
         
             // Show temperature
-            document.getElementById("suhu").innerText =
+            document.getElementById("suhu").value =
                 suhu;
         }
+        
         btnConnect.onclick = async () => {
             if (connected && device) {
                 // Putuskan koneksi
