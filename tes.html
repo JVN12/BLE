@@ -174,18 +174,29 @@
         btn5.onclick = () => sendCommand('5');
         btn6.onclick = () => sendCommand('6');
         
+        await characteristic.startNotifications();
+
+        characteristic.addEventListener(
+        "characteristicvaluechanged",
+        (event) => {
+
+        const value = event.target.value;
+        const decoder = new TextDecoder();
+        const suhu = decoder.decode(value);
+
+        document.getElementById("suhu").value = suhu;
+            }
+        );
+        
         btnsuhu.onclick = async () => {
-            // Read value from BLE characteristic
             const value = await characteristic.readValue();
-        
-            // Convert bytes to text
+
             const decoder = new TextDecoder();
-        
             const suhu = decoder.decode(value);
         
-            // Show temperature
-            document.getElementById("suhu").value =
-                suhu;
+            console.log("Received:", suhu);
+        
+            document.getElementById("suhu").value = suhu;
         }
         
         btnConnect.onclick = async () => {
