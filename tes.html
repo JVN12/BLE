@@ -38,23 +38,23 @@
             color: white;
         }
         .btn-2 {
-            background: #f44336;
+            background: #4CAF50;
             color: white;
         }
         .btn-3 {
-            background: #f44336;
+            background: #4CAF50;
             color: white;
         }
         .btn-4 {
-            background: #f44336;
+            background: #4CAF50;
             color: white;
         }
         .btn-5 {
-            background: #f44336;
+            background: #4CAF50;
             color: white;
         }
         .btn-6 {
-            background: #f44336;
+            background: #4CAF50;
             color: white;
         }
         .btn-suhu {
@@ -176,7 +176,8 @@
         btn5.onclick = () => sendCommand('5');
         btn6.onclick = () => sendCommand('6');
         btnsuhu.onclick = async () => {
-            const value = event.target.value;
+            // Read value from BLE characteristic
+            const value = await characteristic.readValue();
         
             // Convert bytes to text
             const decoder = new TextDecoder();
