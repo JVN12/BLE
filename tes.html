@@ -106,14 +106,22 @@
             if (connected) {
                 statusDiv.textContent = 'Status: ✅ Terhubung ke ESP32';
                 statusDiv.className = 'connected';
-                btnOn.disabled = false;
-                btnOff.disabled = false;
+                btn1.disabled = false;
+                btn2.disabled = false;
+                btn3.disabled = false;
+                btn4.disabled = false;
+                btn5.disabled = false;
+                btn6.disabled = false;
                 btnConnect.textContent = '🔌 Putuskan Koneksi';
             } else {
                 statusDiv.textContent = 'Status: ❌ Belum terhubung';
                 statusDiv.className = 'disconnected';
-                btnOn.disabled = true;
-                btnOff.disabled = true;
+                btn1.disabled = true;
+                btn2.disabled = true;
+                btn3.disabled = true;
+                btn4.disabled = true;
+                btn5.disabled = true;
+                btn6.disabled = true;
                 btnConnect.textContent = '🔌 Hubungkan ke ESP32';
             }
         }
