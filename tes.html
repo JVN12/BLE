@@ -86,7 +86,9 @@
 <body>
     <div class="container">
         <h1>🎛️ ESP32 LED Controller</h1>
-        <input type="text" id="suhuBox" readonly>
+        <div class="suhu-box">
+            🌡️ Suhu: <input type="text" id="suhuBox" readonly value="--.-"> °C
+        </div>
         <div id="status" class="disconnected">
             Status: Belum terhubung
         </div>
@@ -104,10 +106,12 @@
     <script>
         // UUID yang sesuai dengan program ESP32
         const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-        const RX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+        const TX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; // untuk baca data
+        const RX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"; // untuk ngirim data
         
         let device = null;
-        let rxCharacteristic = null;
+        let txCharacteristic = null; // untuk baca data
+        let rxCharacteristic = null; // untuk ngirim data
         let connected = false;
         
         const btnConnect = document.getElementById('btnConnect');
@@ -159,23 +163,24 @@
             }
         }
 
+        function handleNotifications(event) {
+            const value = event.target.value;
+            const decoder = new TextDecoder();
+            const data = decoder.decode(value);
+            
+            const suhu = parseFloat(data);
+            if (!isNaN(suhu)) {
+                document.getElementById("suhuBox").value = suhu.toFixed(2);
+                console.log("Suhu:", suhu, "°C");
+            }
+        }
+        
         btn1.onclick = () => sendCommand('1');
         btn2.onclick = () => sendCommand('2');
         btn3.onclick = () => sendCommand('3');
         btn4.onclick = () => sendCommand('4');
         btn5.onclick = () => sendCommand('5');
         btn6.onclick = () => sendCommand('6');
-
-        async function suhu() {
-            const value = await characteristic.readValue();
-
-            const decoder = new TextDecoder();
-            const suhu = decoder.decode(value);
-        
-            document.getElementById("suhuBox").value = suhu;
-            console.log("Latest temp:", suhu);
-        
-        };
         
         btnConnect.onclick = async () => {
             if (connected && device) {
@@ -208,9 +213,16 @@
                 // Dapatkan characteristic untuk write
                 rxCharacteristic = await service.getCharacteristic(RX_UUID);
                 
+                // Dapatkan characteristic untuk baca data
+                txCharacteristic = await service.getCharacteristic(TX_UUID);
+                await txCharacteristic.startNotifications();
+                txCharacteristic.addEventListener('characteristicvaluechanged', handleNotifications);
+                
                 connected = true;
                 updateUI();
-                
+                if (txCharacteristic) {
+                    await txCharacteristic.stopNotifications();
+                }
                 console.log('Terhubung ke:', device.name);
                 
                 // Handle disconnect
