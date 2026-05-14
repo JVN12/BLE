@@ -167,6 +167,7 @@
             const value = event.target.value;
             const decoder = new TextDecoder();
             const data = decoder.decode(value);
+            console.log("Raw data dari ESP32:", data);
             
             const suhu = parseFloat(data);
             if (!isNaN(suhu)) {
