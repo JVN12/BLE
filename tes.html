@@ -114,6 +114,8 @@
         let rxCharacteristic = null; // untuk ngirim data
         let connected = false;
         let pollingInterval = null;
+        let isWriting = false; // Untuk menandai apakah sedang ada proses kirim data
+        let commandQueue = []; // Antrian untuk perintah yang belum diproses
         
         const btnConnect = document.getElementById('btnConnect');
         const btn1 = document.getElementById('btn1');
@@ -153,16 +155,50 @@
                 alert('Belum terhubung ke ESP32!');
                 return;
             }
+            // Masukkan perintah ke dalam antrian
+            commandQueue.push(command);
+            console.log(`Perintah "${command}" masuk antrian. Antrian: [${commandQueue}]`);
             
-            try {
-                const encoder = new TextEncoder();
-                await rxCharacteristic.writeValue(encoder.encode(command));
-                console.log('Perintah dikirim:', command);
-            } catch (error) {
-                console.error('Gagal kirim perintah:', error);
-                alert('Gagal mengirim perintah: ' + error.message);
+            // Jika sedang tidak mengirim, proses antrian
+            if (!isWriting) {
+                processQueue();
             }
         }
+        
+        async function processQueue() {
+            // Jika antrian kosong, tandai bahwa tidak ada proses dan berhenti
+            if (commandQueue.length === 0) {
+                isWriting = false;
+                return;
+            }
+        
+            // Ada antrian, tandai sedang proses
+            isWriting = true;
+            
+            // Ambil perintah pertama dari antrian
+            const command = commandQueue.shift(); 
+            console.log(`Memproses perintah "${command}". Sisa antrian: [${commandQueue}]`);
+        
+            try {
+                // Kirim perintah ke ESP32
+                const encoder = new TextEncoder();
+                await rxCharacteristic.writeValue(encoder.encode(command));
+                console.log(`Perintah "${command}" berhasil dikirim.`);
+                
+                // TAMBAHKAN JEDA SINGKAT (PENTING!)
+                // Memberi waktu bagi ESP32 untuk memproses perintah 
+                // sebelum perintah berikutnya masuk.
+                await new Promise(resolve => setTimeout(resolve, 100)); 
+                
+            } catch (error) {
+                console.error(`Gagal mengirim perintah "${command}":`, error);
+                // Kamu bisa tambahkan alert atau log error di sini jika perlu
+            } finally {
+                // Setelah perintah selesai (berhasil atau gagal), proses antrian berikutnya
+                processQueue();
+            }
+        }
+
         
         pollingInterval = setInterval(async () => {
             if (txCharacteristic && connected) {
