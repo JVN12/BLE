@@ -188,7 +188,7 @@
                 // TAMBAHKAN JEDA SINGKAT (PENTING!)
                 // Memberi waktu bagi ESP32 untuk memproses perintah 
                 // sebelum perintah berikutnya masuk.
-                await new Promise(resolve => setTimeout(resolve, 100)); 
+                await new Promise(resolve => setTimeout(resolve, 200)); 
                 
             } catch (error) {
                 console.error(`Gagal mengirim perintah "${command}":`, error);
